@@ -14,6 +14,9 @@ async function bootstrap() {
   // Set global prefix
   app.setGlobalPrefix('api');
 
+  // Trust Proxy (required for Google OAuth on Render/Proxies)
+  (app.getHttpAdapter().getInstance() as any).set('trust proxy', 1);
+
   // Security Headers
   app.use(helmet());
 

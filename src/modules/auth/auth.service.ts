@@ -64,7 +64,7 @@ export class AuthService {
 
     async validateGoogleUser(googleUser: any) {
         const user = await this.usersService.findOrCreate(googleUser);
-        const tokens = await this.generateTokens(String(user._id), user.role);
+        const tokens = await this.generateTokens(String(user._id), user.role, user.email, user.name, user.picture);
         await this.updateRefreshToken(String(user._id), tokens.refreshToken);
         return {
             ...tokens,
@@ -72,6 +72,7 @@ export class AuthService {
                 id: user._id,
                 email: user.email,
                 name: user.name,
+                picture: user.picture,
                 role: user.role,
             }
         };
@@ -89,7 +90,7 @@ export class AuthService {
             password: hashedPassword,
         });
 
-        const tokens = await this.generateTokens(String(user._id), user.role);
+        const tokens = await this.generateTokens(String(user._id), user.role, user.email, user.name, user.picture);
         await this.updateRefreshToken(String(user._id), tokens.refreshToken);
 
         return tokens;
@@ -109,7 +110,7 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const tokens = await this.generateTokens(String(user._id), user.role);
+        const tokens = await this.generateTokens(String(user._id), user.role, user.email, user.name, user.picture);
         await this.updateRefreshToken(String(user._id), tokens.refreshToken);
 
         return tokens;
@@ -133,23 +134,23 @@ export class AuthService {
             throw new UnauthorizedException('Access denied');
         }
 
-        const tokens = await this.generateTokens(String(user._id), user.role);
+        const tokens = await this.generateTokens(String(user._id), user.role, user.email, user.name, user.picture);
         await this.updateRefreshToken(String(user._id), tokens.refreshToken);
 
         return tokens;
     }
 
-    private async generateTokens(userId: string, role: string) {
+    private async generateTokens(userId: string, role: string, email: string, name?: string, picture?: string) {
         const [accessToken, refreshToken] = await Promise.all([
             this.jwtService.signAsync(
-                { sub: userId, role },
+                { sub: userId, role, email, name, picture },
                 {
                     secret: this.configService.get<string>('JWT_SECRET'),
                     expiresIn: '3h',
                 },
             ),
             this.jwtService.signAsync(
-                { sub: userId, role },
+                { sub: userId, role, email, name, picture },
                 {
                     secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
                     expiresIn: '7d',

@@ -30,6 +30,9 @@ export class User {
 
     @Prop({ default: null })
     resetPasswordExpires: Date;
+
+    @Prop({ default: null })
+    picture: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -56,16 +56,21 @@ export class UsersService {
     }
 
     async findOrCreate(userData: any): Promise<UserDocument> {
-        const { email, firstName, lastName } = userData;
+        const { email, firstName, lastName, picture } = userData;
         let user = await this.userModel.findOne({ email });
 
         if (!user) {
             user = await this.userModel.create({
                 name: `${firstName} ${lastName}`,
                 email,
+                picture,
                 password: Math.random().toString(36).slice(-8), // Placeholder password for OAuth users
                 role: UserRole.USER,
             });
+        } else if (picture && user.picture !== picture) {
+            // Update picture if it changed
+            user.picture = picture;
+            await user.save();
         }
 
         return user;
