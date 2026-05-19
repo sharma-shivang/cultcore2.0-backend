@@ -40,8 +40,8 @@ export class Product {
     @Prop({ type: [String], default: [] })
     images: string[];
 
-    @Prop({ required: true, index: true })
-    category: string;
+    @Prop({ type: Types.ObjectId, ref: 'Category', required: true, index: true })
+    category: Types.ObjectId | any;
 
     @Prop({ required: true, min: 0, default: 0 })
     stock: number;

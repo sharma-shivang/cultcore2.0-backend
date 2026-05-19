@@ -36,7 +36,7 @@ export class ProductsService {
         const skip = (page - 1) * limit;
 
         const [data, total] = await Promise.all([
-            this.productModel.find(query).skip(skip).limit(limit).exec(),
+            this.productModel.find(query).populate('category').skip(skip).limit(limit).exec(),
             this.productModel.countDocuments(query).exec(),
         ]);
 
@@ -50,11 +50,11 @@ export class ProductsService {
     }
 
     async findAllAdmin(): Promise<Product[]> {
-        return this.productModel.find().sort({ createdAt: -1 }).exec();
+        return this.productModel.find().populate('category').sort({ createdAt: -1 }).exec();
     }
 
     async findOne(id: string): Promise<Product> {
-        const product = await this.productModel.findById(id).exec();
+        const product = await this.productModel.findById(id).populate('category').exec();
         if (!product) {
             throw new NotFoundException(`Product with ID ${id} not found`);
         }
@@ -103,6 +103,7 @@ export class ProductsService {
     async findAllFeatured(limit: number = 8): Promise<Product[]> {
         return this.productModel
             .find({ isFeatured: true, stock: { $gt: 0 } })
+            .populate('category')
             .sort({ createdAt: -1 })
             .limit(limit)
             .exec();
@@ -129,6 +130,7 @@ export class ProductsService {
                 _id: { $ne: new Types.ObjectId(id) },
                 stock: { $gt: 0 },
             })
+            .populate('category')
             .sort({ rating: -1, createdAt: -1 })
             .limit(limit)
             .exec();

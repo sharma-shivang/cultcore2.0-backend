@@ -15,8 +15,14 @@ export class CartService {
 
     async getCart(userId: string) {
         let cart = await this.cartModel.findOne({ user: new Types.ObjectId(userId) })
-            .populate('items.product')
-            .populate('savedForLater.product')
+            .populate({
+                path: 'items.product',
+                populate: { path: 'category' }
+            })
+            .populate({
+                path: 'savedForLater.product',
+                populate: { path: 'category' }
+            })
             .exec();
 
         if (!cart) {

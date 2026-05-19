@@ -16,7 +16,10 @@ export class WishlistService {
     async getWishlist(userId: string) {
         let wishlist = await this.wishlistModel
             .findOne({ user: new Types.ObjectId(userId) })
-            .populate('products')
+            .populate({
+                path: 'products',
+                populate: { path: 'category' }
+            })
             .exec();
 
         if (!wishlist) {
