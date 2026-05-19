@@ -36,18 +36,29 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   const configService = app.get(ConfigService);
-  const frontendUrl = configService.get<string>('FRONTEND_URL', 'http://localhost:3001');
+  let frontendUrl = configService.get<string>('FRONTEND_URL', 'http://localhost:3001');
+  
+  // Ensure we have a protocol for CORS origin matching
+  if (frontendUrl && !frontendUrl.includes('://')) {
+    frontendUrl = `https://${frontendUrl}`;
+  }
+  // Strip trailing slash
+  frontendUrl = frontendUrl.replace(/\/$/, '');
 
   // Format origins to include both root and www variants
   const origins = [frontendUrl, 'http://localhost:3001'];
-  if (frontendUrl && frontendUrl.includes('://') && !frontendUrl.includes('localhost')) {
-    const url = new URL(frontendUrl);
-    const host = url.hostname;
-    const protocol = url.protocol;
-    if (host.startsWith('www.')) {
-      origins.push(`${protocol}//${host.replace('www.', '')}`);
-    } else {
-      origins.push(`${protocol}//www.${host}`);
+  if (frontendUrl && !frontendUrl.includes('localhost')) {
+    try {
+      const url = new URL(frontendUrl);
+      const host = url.hostname;
+      const protocol = url.protocol;
+      if (host.startsWith('www.')) {
+        origins.push(`${protocol}//${host.replace('www.', '')}`);
+      } else {
+        origins.push(`${protocol}//www.${host}`);
+      }
+    } catch (e) {
+      console.warn('Invalid FRONTEND_URL for CORS:', frontendUrl);
     }
   }
 
