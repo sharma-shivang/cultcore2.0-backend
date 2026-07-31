@@ -33,6 +33,14 @@ export class CreateOrderDto {
     @IsString()
     couponCode?: string;
 
+    @IsString()
+    @IsNotEmpty()
+    firstName: string;
+
+    @IsString()
+    @IsNotEmpty()
+    lastName: string;
+
     @IsEmail()
     @IsNotEmpty()
     email: string;

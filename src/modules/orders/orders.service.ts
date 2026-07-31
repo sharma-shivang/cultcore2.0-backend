@@ -53,8 +53,7 @@ export class OrdersService {
             subtotal += effectivePrice * item.quantity;
         }
 
-        const FREE_SHIPPING_THRESHOLD = 999;
-        const flatShipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 99;
+        const flatShipping = subtotal < 1500 ? 120 : 150;
 
         // Apply coupon if provided
         let discount = 0;
@@ -82,6 +81,8 @@ export class OrdersService {
             status: 'pending',
             email: createOrderDto.email,
             phone: createOrderDto.phone,
+            firstName: createOrderDto.firstName,
+            lastName: createOrderDto.lastName,
             orderNote: createOrderDto.orderNote ?? null,
         });
         await newOrder.save();

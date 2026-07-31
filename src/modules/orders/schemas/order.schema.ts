@@ -70,6 +70,12 @@ export class Order {
     discount: number; // amount saved
 
     @Prop({ default: '' })
+    firstName: string;
+
+    @Prop({ default: '' })
+    lastName: string;
+
+    @Prop({ default: '' })
     email: string;
 
     @Prop({ default: '' })
