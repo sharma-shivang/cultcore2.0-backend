@@ -115,6 +115,7 @@ export class OrdersService {
 
     async findOne(orderId: string, userId?: string) {
         const order = await this.orderModel.findById(orderId)
+            .populate('user', 'name email')
             .populate('items.product', 'title images price category description')
             .exec();
 
@@ -251,6 +252,14 @@ export class OrdersService {
                 $group: {
                     _id: '$_id',
                     user: { $first: '$user' },
+                    firstName: { $first: '$firstName' },
+                    lastName: { $first: '$lastName' },
+                    email: { $first: '$email' },
+                    phone: { $first: '$phone' },
+                    instagram: { $first: '$instagram' },
+                    orderNote: { $first: '$orderNote' },
+                    couponCode: { $first: '$couponCode' },
+                    discount: { $first: '$discount' },
                     items: { $push: '$items' },
                     shippingAddress: { $first: '$shippingAddress' },
                     subtotal: { $first: '$subtotal' },
