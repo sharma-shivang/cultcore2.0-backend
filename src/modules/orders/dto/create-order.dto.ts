@@ -52,4 +52,8 @@ export class CreateOrderDto {
     @IsOptional()
     @IsString()
     orderNote?: string;
+
+    @IsOptional()
+    @IsString()
+    instagram?: string;
 }

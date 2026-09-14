@@ -15,6 +15,15 @@ export class OrderItem {
 
     @Prop({ required: true })
     price: number; // Snapshot of the price at purchase
+
+    @Prop({ required: false })
+    variantSku?: string;
+
+    @Prop({ required: false })
+    size?: string;
+
+    @Prop({ required: false })
+    color?: string;
 }
 
 @Schema()
@@ -83,6 +92,9 @@ export class Order {
 
     @Prop({ type: String, default: null })
     orderNote: string | null;
+
+    @Prop({ type: String, default: null })
+    instagram: string | null;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

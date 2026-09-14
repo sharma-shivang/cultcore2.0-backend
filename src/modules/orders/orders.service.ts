@@ -42,13 +42,23 @@ export class OrdersService {
             }
 
             const exactProduct = product as any;
+            let basePrice = exactProduct.price;
+            if (item.variantSku && exactProduct.variants?.length > 0) {
+                const variant = exactProduct.variants.find((v: any) => v.sku === item.variantSku);
+                if (variant) {
+                    basePrice = variant.price;
+                }
+            }
             const discountPercent = exactProduct.discountPercent || 0;
-            const effectivePrice = Math.round(exactProduct.price * (1 - discountPercent / 100));
+            const effectivePrice = Math.round(basePrice * (1 - discountPercent / 100));
 
             orderItems.push({
                 product: exactProduct._id,
                 quantity: item.quantity,
                 price: effectivePrice,
+                variantSku: item.variantSku,
+                size: item.size,
+                color: item.color,
             });
             subtotal += effectivePrice * item.quantity;
         }
@@ -84,6 +94,7 @@ export class OrdersService {
             firstName: createOrderDto.firstName,
             lastName: createOrderDto.lastName,
             orderNote: createOrderDto.orderNote ?? null,
+            instagram: createOrderDto.instagram ?? null,
         });
         await newOrder.save();
 
